@@ -6,28 +6,20 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "client.hh"
 
-int getPort() {
 
-	int port;
-	std::string input;
+Client::Client(const char* ip, int port): _ip(ip), _port(port) {
 
-	std::cout << "Please choose Server Port:" << std::endl;
-	std::cin >> input;
-
-	try {
-		port = std::stoi(input);
-	}
-
-	catch (const std::exception& e) {
-		port = 0;
-	}
-
-	return port;
 }
 
 
-int connect(int port) {
+Client::~Client() {
+
+}
+
+
+int Client::serverConnect() const {
 
 	int sock = 0;
 	struct sockaddr_in serv_addr;
@@ -43,9 +35,9 @@ int connect(int port) {
 	memset(&serv_addr, '0', sizeof(serv_addr));
 
 	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(port);
+	serv_addr.sin_port = htons(_port);
 
-	if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) {
+	if(inet_pton(AF_INET, _ip, &serv_addr.sin_addr)<=0) {
 
 		printf("\nInvalid address / Address not supported\n");
 		return -1;
@@ -64,13 +56,4 @@ int connect(int port) {
 
 	return 0;
 
-}
-
-
-int main() {
-
-	int port = getPort();
-	connect(port);
-
-	return 0;
 }

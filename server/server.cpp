@@ -1,15 +1,17 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <stdlib.h>
-#include <netinet/in.h>
-#include <iostream>
-#include <string.h>
-
-#define PORT 4242
+#include "server.hh"
 
 
-int connect() {
+Server::Server(int port): _port(port) {
+
+}
+
+
+Server::~Server() {
+
+}
+
+
+int Server::launch() const {
 
 	int server_fd, new_socket;
 	struct sockaddr_in address;
@@ -32,7 +34,7 @@ int connect() {
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons(PORT);
+	address.sin_port = htons(_port);
 
 	if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
 
@@ -46,7 +48,7 @@ int connect() {
 		exit(EXIT_FAILURE);
 	}
 
-	if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
+	if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
 
 		perror("Accept");
 		exit(EXIT_FAILURE);
@@ -58,13 +60,5 @@ int connect() {
 	send(new_socket, connected, strlen(connected), 0);
 
 	return 0;
-
-}
-
-
-int main() {
-
-	std::cout << "Waiting for connection..." << std::endl;
-	connect();
 
 }
